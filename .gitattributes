@@ -1,0 +1,4 @@
+Build/SpaceShipRGL-build.data filter=lfs diff=lfs merge=lfs -text
+Build/SpaceShipRGL-build.wasm filter=lfs diff=lfs merge=lfs -text
+*.wasm filter=lfs diff=lfs merge=lfs -text
+*.data filter=lfs diff=lfs merge=lfs -text
