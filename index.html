@@ -9,6 +9,7 @@
       html, body {
         width: 100%;
         height: 100%;
+        height: var(--app-height, 100dvh);
         margin: 0;
         padding: 0;
         overflow: hidden;
@@ -20,7 +21,7 @@
         inset: 0;
         display: block;
         width: 100vw;
-        height: 100vh;
+        height: var(--app-height, 100dvh);
         border: 0;
         background: #231F20;
         touch-action: none;
@@ -32,6 +33,28 @@
     <script src="Build/SpaceShipRGL-Build.loader.js"></script>
     <script>
       const canvas = document.querySelector("#unity-canvas");
+      const isMobileInput =
+        (navigator.userAgentData && navigator.userAgentData.mobile) ||
+        window.matchMedia("(pointer: coarse)").matches;
+
+      function updateVisualViewportHeight() {
+        const viewportHeight = window.visualViewport
+          ? window.visualViewport.height
+          : window.innerHeight;
+        document.documentElement.style.setProperty(
+          "--app-height",
+          `${viewportHeight}px`);
+      }
+
+      updateVisualViewportHeight();
+      window.addEventListener("resize", updateVisualViewportHeight);
+      window.addEventListener("orientationchange", updateVisualViewportHeight);
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener(
+          "resize",
+          updateVisualViewportHeight);
+      }
+
       const config = {
         arguments: [],
         dataUrl: "Build/SpaceShipRGL-Build.data",
@@ -45,6 +68,18 @@
 
       createUnityInstance(canvas, config).then((unityInstance) => {
         canvas.focus();
+
+        if (isMobileInput) {
+          const enterMobileFullscreen = () => {
+            if (!document.fullscreenElement)
+              unityInstance.SetFullscreen(1);
+          };
+
+          document.addEventListener(
+            "pointerdown",
+            enterMobileFullscreen,
+            { once: true, capture: true });
+        }
       }).catch((message) => {
         alert(message);
       });
